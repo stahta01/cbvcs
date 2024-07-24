@@ -144,7 +144,6 @@ class cbvcs : public cbPlugin
         vcsProjectTracker* GetVcsInstance(const FileTreeData*);
         void GetFileItem(TreeItemVector& treeVector, const wxTreeCtrl&, const wxTreeItemId&);
         void GetDescendents(TreeItemVector& treeVector, const wxTreeCtrl&, const wxTreeItemId&);
-        vcsProjectTracker* GetSelectedItemInfo(const wxTreeCtrl*&, wxTreeItemId& , const FileTreeData*&);
         void CreateProjectMenu(wxMenu* menu, const FileTreeData* data);
         void CreateFileMenu(wxMenu* menu, const FileTreeData* data);
         void CreateFolderMenu(wxMenu* menu);
@@ -158,6 +157,8 @@ class cbvcs : public cbPlugin
         void OnProjectSave( CodeBlocksEvent& );
         void OnProjectClose( CodeBlocksEvent& );
         void OnEditorSave( CodeBlocksEvent& );
+        enum  VcsAction : unsigned int;
+        void PerformGroupActionOnSelection(VcsAction);
 };
 
 #endif // CBVCS_H_INCLUDED

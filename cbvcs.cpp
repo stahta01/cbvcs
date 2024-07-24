@@ -286,131 +286,111 @@ void cbvcs::GetDescendents(TreeItemVector& treeVector, const wxTreeCtrl& tree, c
     }
 }
 
-vcsProjectTracker* cbvcs::GetSelectedItemInfo(const wxTreeCtrl*& tree, wxTreeItemId& selItem, const FileTreeData*& ftData)
+enum  cbvcs::VcsAction : unsigned int
 {
-    tree = Manager::Get()->GetProjectManager()->GetTree();
+    VcsAction_Add,
+    VcsAction_Remove,
+    VcsAction_Commit,
+    VcsAction_Revert
+};
+
+void cbvcs::PerformGroupActionOnSelection(VcsAction action)
+{
+    const wxTreeCtrl* tree;
+    wxArrayTreeItemIds treeItems;
+    FileTreeData* data;
+    vcsProjectTracker* selectedProjectTracker = nullptr;
+
+    tree = Manager::Get()->GetProjectManager()->GetUI().GetTree();
     if(!tree)
-    {
-        return 0;
-    }
-
-    selItem = tree->GetSelection();
-    if ( !selItem.IsOk() )
-    {
-        return 0;
-    }
-
-    ftData = static_cast<FileTreeData*>( tree->GetItemData( selItem ) );
-
-    if ( !ftData )
-    {
-        return 0;
-    }
-
-    return GetVcsInstance(ftData);
-}
-
-void cbvcs::PerformGroupAction(vcsProjectTracker& prjTracker,
-                               VcsFileOp& fileOp,
-                               const wxTreeCtrl& tree,
-                               wxTreeItemId& treeItem,
-                               const FileTreeData& data)
-{
-    TreeItemVector files;
-
-    if(data.GetKind() == FileTreeData::ftdkFile)
-    {
-        ProjectFile* f = data.GetProjectFile();
-        if ( f )
-        {
-            files.CreateFileItem(f);
-            fileOp.execute(files.GetVector());
-        }
-    }
-    else if(data.GetKind() == FileTreeData::ftdkFolder)
-    {
-        GetDescendents(files, tree, treeItem);
-        fileOp.execute(files.GetVector());
-    }
-    else if(data.GetKind() == FileTreeData::ftdkProject)
-    {
-        cbProject* prj = data.GetProject();
-
-        files.CreateProjectItem(prj->GetFilename(), prjTracker.GetProjectState());
-        GetDescendents(files, tree, treeItem);
-        fileOp.execute(files.GetVector());
-    }
-    else
     {
         return;
     }
 
-    IVersionControlSystem& vcs = prjTracker.GetVcs();
+    size_t selectionSize = tree->GetSelections(treeItems);
+    if ( !selectionSize )
+    {
+        return;
+    }
+    TreeItemVector files;
+
+    for (size_t i = 0; i < selectionSize; i++)
+    {
+        const wxTreeItemId& selItem = treeItems[i];
+        FileTreeData* fileTreeData = static_cast<FileTreeData*>( tree->GetItemData( selItem ) );
+        if ( !fileTreeData )
+        {
+            fprintf(stderr, "%s:%d : fileTree data not available. index %zu\n", __FUNCTION__, __LINE__, i);
+            continue;
+        }
+        vcsProjectTracker* prjTracker = GetVcsInstance(fileTreeData);
+        if(!prjTracker)
+        {
+            fprintf(stderr, "%s:%d : prjTracker data not available. index %zu %s\n", __FUNCTION__, __LINE__, i, fileTreeData->GetProjectFile()->relativeToCommonTopLevelPath.ToUTF8().data());
+            continue;
+        }
+        selectedProjectTracker =  prjTracker;
+
+        const FileTreeData::FileTreeDataKind fileTreeDataKind = fileTreeData->GetKind();
+        if(fileTreeDataKind == FileTreeData::ftdkFile)
+        {
+            files.CreateFileItem(fileTreeData->GetProjectFile());
+        }
+        else if(fileTreeDataKind == FileTreeData::ftdkFolder)
+        {
+            GetDescendents(files, *tree, selItem);
+        }
+        else if(fileTreeDataKind == FileTreeData::ftdkProject)
+        {
+            cbProject* prj = fileTreeData->GetProject();
+            files.CreateProjectItem(prj->GetFilename(), prjTracker->GetProjectState());
+            GetDescendents(files, *tree, selItem);
+        }
+    }
+
+    if(!selectedProjectTracker)
+    {
+        fprintf(stderr, "%s:%d : selectedProjectTracker  not available.\n", __FUNCTION__, __LINE__);
+        return;
+    }
+
+    IVersionControlSystem& vcs = selectedProjectTracker->GetVcs();
+    switch (action)
+    {
+    case VcsAction_Add:
+        vcs.AddOp.execute(files.GetVector());
+        break;
+    case VcsAction_Remove:
+        vcs.RemoveOp.execute(files.GetVector());
+        break;
+    case VcsAction_Commit:
+        vcs.CommitOp.execute(files.GetVector());
+        break;
+    case VcsAction_Revert:
+        vcs.RevertOp.execute(files.GetVector());
+        break;
+    }
     vcs.UpdateOp.execute(files.GetVector());
 }
 
 void cbvcs::OnAdd( wxCommandEvent& /*event*/ )
 {
-    const wxTreeCtrl* tree;
-    wxTreeItemId treeItem;
-    const FileTreeData* itemData;
-    vcsProjectTracker* prjTracker;
-
-    prjTracker = GetSelectedItemInfo(tree, treeItem, itemData);
-    if(!prjTracker)
-    {
-        return;
-    }
-
-    PerformGroupAction(*prjTracker, prjTracker->GetVcs().AddOp, *tree, treeItem, *itemData);
+    PerformGroupActionOnSelection(VcsAction_Add);
 }
 
 void cbvcs::OnRemove( wxCommandEvent& /*event*/ )
 {
-    const wxTreeCtrl* tree;
-    wxTreeItemId treeItem;
-    const FileTreeData* itemData;
-    vcsProjectTracker* prjTracker;
-
-    prjTracker = GetSelectedItemInfo(tree, treeItem, itemData);
-    if(!prjTracker)
-    {
-        return;
-    }
-
-    PerformGroupAction(*prjTracker, prjTracker->GetVcs().RemoveOp, *tree, treeItem, *itemData);
+    PerformGroupActionOnSelection(VcsAction_Remove);
 }
 
 void cbvcs::OnCommit( wxCommandEvent& /*event*/ )
 {
-    const wxTreeCtrl* tree;
-    wxTreeItemId treeItem;
-    const FileTreeData* itemData;
-    vcsProjectTracker* prjTracker;
-
-    prjTracker = GetSelectedItemInfo(tree, treeItem, itemData);
-    if(!prjTracker)
-    {
-        return;
-    }
-
-    PerformGroupAction(*prjTracker, prjTracker->GetVcs().CommitOp, *tree, treeItem, *itemData);
+    PerformGroupActionOnSelection(VcsAction_Commit);
 }
 
 void cbvcs::OnRevert( wxCommandEvent& /*event*/ )
 {
-    const wxTreeCtrl* tree;
-    wxTreeItemId treeItem;
-    const FileTreeData* itemData;
-    vcsProjectTracker* prjTracker;
-
-    prjTracker = GetSelectedItemInfo(tree, treeItem, itemData);
-    if(!prjTracker)
-    {
-        return;
-    }
-
-    PerformGroupAction(*prjTracker, prjTracker->GetVcs().RevertOp, *tree, treeItem, *itemData);
+    PerformGroupActionOnSelection(VcsAction_Revert);
 }
 
 void cbvcs::OnProjectOpen( CodeBlocksEvent& event )
