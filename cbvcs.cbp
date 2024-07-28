@@ -12,6 +12,7 @@
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option host_application="codeblocks" />
+				<Option run_host_application_in_terminal="0" />
 				<Compiler>
 					<Add option="`pkg-config --cflags codeblocks`" />
 					<Add option="`wx-config --cflags`" />
@@ -31,12 +32,13 @@
 			</Target>
 			<Target title="Win32">
 				<Option platforms="Windows;" />
-				<Option output="..\..\..\devel\share\CodeBlocks\plugins\cbvcs" prefix_auto="1" extension_auto="1" />
-				<Option object_output="..\..\..\.objs\plugins\contrib\cbvcs" />
+				<Option output="../../../devel/share/CodeBlocks/plugins/cbvcs" prefix_auto="1" extension_auto="1" />
+				<Option object_output="../../../.objs/plugins/contrib/cbvcs" />
 				<Option type="3" />
 				<Option compiler="gcc" />
 				<Option parameters="--debug-log --multiple-instance --no-check-associations -ns -nd" />
-				<Option host_application="..\..\..\devel\codeblocks.exe" />
+				<Option host_application="../../../devel/codeblocks.exe" />
+				<Option run_host_application_in_terminal="0" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-pipe" />
@@ -53,11 +55,11 @@
 					<Add option="-DCB_PRECOMP" />
 					<Add option="-DWX_PRECOMP" />
 					<Add option="-DwxUSE_UNICODE" />
-					<Add directory="..\..\..\include" />
-					<Add directory="..\..\..\sdk\wxscintilla\include" />
+					<Add directory="../../../include" />
+					<Add directory="../../../sdk/wxscintilla/include" />
 					<Add directory="$(#wx.include)" />
 					<Add directory="$(#wx.lib)" />
-					<Add directory="$(#wx.lib)\gcc_dll$(WX_CFG)\msw$(WX_SUFFIX)" />
+					<Add directory="$(#wx.lib)/gcc_dll$(WX_CFG)/msw$(WX_SUFFIX)" />
 				</Compiler>
 				<ResourceCompiler>
 					<Add directory="$(#wx.include)" />
@@ -67,18 +69,18 @@
 					<Add option="-mthreads" />
 					<Add library="codeblocks" />
 					<Add library="wxmsw$(WX_VERSION)$(WX_SUFFIX)" />
-					<Add directory="..\..\..\devel" />
+					<Add directory="../../../devel" />
 					<Add directory="$(#wx.lib)" />
-					<Add directory="$(#wx.lib)\gcc_dll$(WX_CFG)" />
+					<Add directory="$(#wx.lib)/gcc_dll$(WX_CFG)" />
 				</Linker>
 				<ExtraCommands>
 					<Add after="zip -j9 ..\..\..\devel\share\codeblocks\cbvcs.zip manifest.xml" />
 					<Mode after="always" />
 				</ExtraCommands>
 				<Environment>
+					<Variable name="WX_CFG" value="" />
 					<Variable name="WX_SUFFIX" value="u" />
 					<Variable name="WX_VERSION" value="28" />
-					<Variable name="WX_CFG" value="" />
 				</Environment>
 			</Target>
 		</Build>
@@ -102,10 +104,13 @@
 		<Unit filename="cbvcs.h" />
 		<Unit filename="copyprotector.h" />
 		<Unit filename="git-update.cpp" />
+		<Unit filename="git-update.h" />
 		<Unit filename="git.cpp" />
 		<Unit filename="git.h" />
 		<Unit filename="gitaddop.cpp" />
+		<Unit filename="gitaddop.h" />
 		<Unit filename="gitcommitop.cpp" />
+		<Unit filename="gitcommitop.h" />
 		<Unit filename="gitop.cpp" />
 		<Unit filename="gitop.h" />
 		<Unit filename="gitremoveop.cpp" />
@@ -125,9 +130,6 @@
 		<Unit filename="vcstrackermap.h" />
 		<Unit filename="wxsmith/CommitMsgDialog.wxs" />
 		<Extensions>
-			<code_completion />
-			<debugger />
-			<envvars />
 			<wxsmith version="1">
 				<resources>
 					<wxScrollingDialog wxs="wxsmith/CommitMsgDialog.wxs" src="CommitMsgDialog.cpp" hdr="CommitMsgDialog.h" fwddecl="0" i18n="1" name="CommitMsgDialog" language="CPP" />
