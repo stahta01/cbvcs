@@ -1,0 +1,10 @@
+.cache/
+.clang-format
+.objs/
+cbvcs.cbplugin
+cbvcs.depend
+cbvcs.layout
+cbvcs.so
+cbvcs.zip
+compile_commands.json
+libcbvcs.so
