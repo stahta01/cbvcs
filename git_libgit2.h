@@ -15,17 +15,35 @@
     You should have received a copy of the GNU General Public License
     along with cbvcs.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "vcsfactory.h"
-#include "git.h"
-#include "git_libgit2.h"
-#include "icommandexecuter.h"
+#ifndef LibGit2_H
+#define LibGit2_H
 
-/*static*/ IVersionControlSystem* VcsFactory::GetVcs(const wxString& ProjectPath,
-                                                     ICommandExecuter& shellUtils)
+#include "IVersionControlSystem.h"
+#include "git_libgit2_ops.h"
+
+class wxArrayString;
+
+class LibGit2 : public IVersionControlSystem
 {
-    if(LibGit2::IsGitRepo(ProjectPath, shellUtils))
-    {
-        return new LibGit2(ProjectPath, shellUtils);
-    }
-    return 0;
-}
+  public:
+    static bool IsGitRepo(const wxString &project, ICommandExecuter &);
+    LibGit2(const wxString &project, ICommandExecuter &cmdExecutor);
+    virtual ~LibGit2();
+
+    virtual bool move(std::vector<VcsTreeItem *> &) { return false; }
+
+  protected:
+    wxString m_GitRoot;
+
+  private:
+    ICommandExecuter &m_CmdExecutor;
+    LibGit2UpdateOp m_GitUpdate;
+    LibGit2AddOp m_GitAdd;
+    LibGit2RemoveOp m_GitRemove;
+    LibGit2CommitOp m_GitCommit;
+    LibGit2RevertOp m_GitRevert;
+
+    wxString QueryRoot(const wxString &);
+};
+
+#endif // GIT_H
