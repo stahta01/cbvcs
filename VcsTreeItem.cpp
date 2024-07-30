@@ -38,7 +38,10 @@ const wxString VcsTreeItem::GetRelativeName(const wxString& RootPath) const
     if(m_Name.StartsWith(RootPath, &relativeName))
     {
         // strip first '/'
-        relativeName = relativeName(1, relativeName.length());
+        if (wxFileName::IsPathSeparator(relativeName.at(0)))
+        {
+            relativeName = relativeName(1, relativeName.length());
+        }
     }
 
     return relativeName;
