@@ -38,26 +38,20 @@ CommitMsgDialog::CommitMsgDialog(wxWindow* parent, wxString& msg, wxArrayString&
     m_msg(msg)
 {
     const int id = wxID_ANY;    // I'm sick of fighting the resource editor
-
 	//(*Initialize(CommitMsgDialog)
-	wxStaticText* StaticText2;
-	wxStaticText* StaticText1;
-	wxStaticText* StaticText3;
-	wxButton* Button2;
-
 	Create(parent, id, wxEmptyString, wxDefaultPosition, wxDefaultSize, wxDEFAULT_DIALOG_STYLE, _T("id"));
 	SetClientSize(wxSize(567,585));
 	Move(wxDefaultPosition);
-	StaticText1 = new wxStaticText(this, wxID_ANY, _("Summary of changes:"), wxPoint(16,8), wxDefaultSize, 0, _T("wxID_ANY"));
+	new wxStaticText(this, wxID_ANY, _("Summary of changes:"), wxPoint(16,8), wxDefaultSize, 0, _T("wxID_ANY"));
 	m_Summary = new wxTextCtrl(this, ID_SUMMARY1, _("Brief summary of changes"), wxPoint(16,32), wxSize(536,27), 0, wxDefaultValidator, _T("ID_SUMMARY1"));
 	m_Summary->SetMaxLength(50);
-	StaticText2 = new wxStaticText(this, wxID_ANY, _("Commit message:"), wxPoint(16,72), wxDefaultSize, 0, _T("wxID_ANY"));
+	new wxStaticText(this, wxID_ANY, _("Commit message:"), wxPoint(16,72), wxDefaultSize, 0, _T("wxID_ANY"));
 	m_Details = new wxTextCtrl(this, ID_DETAILS, _("Enter your commit message here..."), wxPoint(16,96), wxSize(536,256), wxTE_NO_VSCROLL|wxTE_MULTILINE|wxTE_WORDWRAP|wxVSCROLL|wxFULL_REPAINT_ON_RESIZE, wxDefaultValidator, _T("ID_DETAILS"));
 	m_OkButton = new wxButton(this, wxID_OK, wxEmptyString, wxPoint(464,544), wxDefaultSize, 0, wxDefaultValidator, _T("wxID_OK"));
 	m_OkButton->SetDefault();
-	Button2 = new wxButton(this, wxID_CANCEL, wxEmptyString, wxPoint(368,544), wxDefaultSize, 0, wxDefaultValidator, _T("wxID_CANCEL"));
+	new wxButton(this, wxID_CANCEL, wxEmptyString, wxPoint(368,544), wxDefaultSize, 0, wxDefaultValidator, _T("wxID_CANCEL"));
 	m_FileList = new wxCheckListBox(this, ID_FILELIST, wxPoint(16,392), wxSize(536,136), 0, 0, 0, wxDefaultValidator, _T("ID_FILELIST"));
-	StaticText3 = new wxStaticText(this, wxID_ANY, _("File list:"), wxPoint(16,368), wxDefaultSize, 0, _T("wxID_ANY"));
+	new wxStaticText(this, wxID_ANY, _("File list:"), wxPoint(16,368), wxDefaultSize, 0, _T("wxID_ANY"));
 
 	Connect(ID_SUMMARY1,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&CommitMsgDialog::OnMessageChange);
 	Connect(ID_DETAILS,wxEVT_COMMAND_TEXT_UPDATED,(wxObjectEventFunction)&CommitMsgDialog::OnMessageChange);

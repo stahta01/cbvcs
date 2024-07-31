@@ -298,7 +298,6 @@ void cbvcs::PerformGroupActionOnSelection(VcsAction action)
 {
     const wxTreeCtrl* tree;
     wxArrayTreeItemIds treeItems;
-    FileTreeData* data;
     vcsProjectTracker* selectedProjectTracker = nullptr;
 
     tree = Manager::Get()->GetProjectManager()->GetUI().GetTree();
