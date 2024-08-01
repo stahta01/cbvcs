@@ -16,7 +16,6 @@
 					<Add option="`pkg-config --cflags codeblocks`" />
 					<Add option="`wx-config --cflags`" />
 					<Add option="-ggdb" />
-					<Add directory="/home/dushara/src/cbvcs/tests/.." />
 				</Compiler>
 				<Linker>
 					<Add option="`pkg-config --libs codeblocks`" />
@@ -35,7 +34,6 @@
 					<Add option="`wx-config --cflags`" />
 					<Add option="-fprofile-arcs" />
 					<Add option="-ftest-coverage" />
-					<Add directory="/home/dushara/src/cbvcs/tests/.." />
 				</Compiler>
 				<Linker>
 					<Add option="`pkg-config --libs codeblocks`" />
@@ -62,7 +60,6 @@
 					<Add option="-g" />
 					<Add option="`pkg-config --cflags codeblocks`" />
 					<Add option="`wx-config --cflags`" />
-					<Add directory="/home/dushara/src/cbvcs/tests/.." />
 				</Compiler>
 				<Linker>
 					<Add option="`pkg-config --libs codeblocks`" />
@@ -77,6 +74,7 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add directory="../" />
 		</Compiler>
 		<Unit filename="../IVersionControlSystem.cpp" />
 		<Unit filename="../VcsFileOp.cpp" />
@@ -102,9 +100,6 @@
 		<Unit filename="stubs/thread.cpp" />
 		<Unit filename="test-git-update.cpp" />
 		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
 			<lib_finder disable_auto="1" />
 		</Extensions>
 	</Project>
