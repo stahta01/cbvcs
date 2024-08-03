@@ -90,10 +90,3 @@ wxString LibGit2::QueryRoot(const wxString &project)
     git_libgit2_shutdown();
     return ret;
 }
-
-#if 0
-
-void GitRevertOp::execute(std::vector<VcsTreeItem*>& paths) const
-{
-}
-#endif

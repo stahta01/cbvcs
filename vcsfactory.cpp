@@ -36,7 +36,6 @@
     {
         return new git(ProjectPath, shellUtils);
     }
-
 #endif
     return 0;
 }

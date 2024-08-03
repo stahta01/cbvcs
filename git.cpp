@@ -18,7 +18,6 @@
 
 #include <wx/string.h>
 #include "git.h"
-#include "VcsTreeItem.h"
 #include "icommandexecuter.h"
 
 git::git(const wxString& project, ICommandExecuter& cmdExecutor) :

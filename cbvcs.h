@@ -26,7 +26,6 @@
     #include <wx/wx.h>
 #endif
 
-#include <map>
 #include <cbplugin.h> // for "class cbPlugin"
 
 #include "vcstrackermap.h"
