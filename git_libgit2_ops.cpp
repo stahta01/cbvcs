@@ -403,10 +403,10 @@ void LibGit2RevertOp::ExecuteImplementation(std::vector<VcsTreeItem *> &pathList
         {
             free(opts.paths.strings[count]);
         }
-        free(opts.paths.strings);
     }
     else
     {
         fprintf(stderr, "LibGit2::%s:%d no files\n", __FUNCTION__, __LINE__);
     }
+    free(opts.paths.strings);
 }
