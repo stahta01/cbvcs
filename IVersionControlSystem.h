@@ -35,6 +35,7 @@ class IVersionControlSystem
                               VcsFileOp& add,
                               VcsFileOp& remove,
                               VcsFileOp& commit,
+                              VcsFileOp& diff,
                               VcsFileOp& revert);
         virtual ~IVersionControlSystem();
 
@@ -43,6 +44,7 @@ class IVersionControlSystem
         VcsFileOp& RemoveOp;
         virtual bool move(std::vector<VcsTreeItem*>&) = 0;
         VcsFileOp& CommitOp;
+        VcsFileOp& DiffOp;
         VcsFileOp& RevertOp;
 
     protected:

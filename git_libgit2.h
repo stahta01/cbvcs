@@ -41,6 +41,7 @@ class LibGit2 : public IVersionControlSystem
     LibGit2AddOp m_GitAdd;
     LibGit2RemoveOp m_GitRemove;
     LibGit2CommitOp m_GitCommit;
+    LibGit2DiffOp m_GitDiff;
     LibGit2RevertOp m_GitRevert;
 
     wxString QueryRoot(const wxString &);

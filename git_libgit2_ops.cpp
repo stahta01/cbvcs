@@ -21,6 +21,9 @@
 #include "CommitMsgDialog.h"
 #include "VcsTreeItem.h"
 #include "icommandexecuter.h"
+#include <cbeditor.h>
+#include <cbstyledtextctrl.h>
+#include <editormanager.h>
 #include <git2.h>
 #include <manager.h>
 
@@ -362,6 +365,86 @@ void LibGit2RemoveOp::ExecuteImplementation(std::vector<VcsTreeItem *> &pathList
             fprintf(stderr, "LibGit2::%s:%d git_index_remove_bypath failed : %d/%d: %s\n", __FUNCTION__, __LINE__, error, e->klass, e->message);
         }
     }
+}
+
+static int diff_aggragator_cb(const git_diff_delta *delta, const git_diff_hunk *hunk, const git_diff_line *l, void *data)
+{
+    (void)delta;
+    (void)hunk;
+    wxString *diff = (wxString *)data;
+    if (l->origin == GIT_DIFF_LINE_CONTEXT || l->origin == GIT_DIFF_LINE_ADDITION || l->origin == GIT_DIFF_LINE_DELETION)
+        diff->append(l->origin);
+
+    diff->append(l->content, l->content_len);
+    return 0;
+}
+
+/***********************************************************************
+ *  Method: LibGit2DiffOp::ExecuteImplementation
+ *  Params: std::vector<VcsTreeItem *> &
+ * Returns: void
+ * Effects:
+ ***********************************************************************/
+void LibGit2DiffOp::ExecuteImplementation(std::vector<VcsTreeItem *> &pathList) const
+{
+    GitRepo gitRepo(m_VcsRootDir);
+    if (!gitRepo.m_repo)
+    {
+        fprintf(stderr, "LibGit2::%s:%d gitRepo.m_repo not available\n", __FUNCTION__, __LINE__);
+        return;
+    }
+
+    git_diff_options opts = GIT_DIFF_OPTIONS_INIT;
+    opts.pathspec.strings = (char **)malloc(sizeof(char *) * pathList.size());
+    for (VcsTreeItem *vcsTreeItem : pathList)
+    {
+        wxString relativeFilename = vcsTreeItem->GetRelativeName(m_VcsRootDir);
+        if (relativeFilename.length() == 0)
+        {
+            continue;
+        }
+        opts.pathspec.strings[opts.pathspec.count] = strdup(relativeFilename.ToUTF8().data());
+        opts.pathspec.count++;
+    }
+    if (opts.pathspec.count)
+    {
+        git_diff *diff;
+        int error = git_diff_index_to_workdir(&diff, gitRepo.m_repo, NULL, &opts);
+        if (0 != error)
+        {
+            const git_error *e = git_error_last();
+            fprintf(stderr, "LibGit2::%s:%d git_diff_index_to_workdir failed : %d/%d: %s\n", __FUNCTION__, __LINE__, error, e->klass, e->message);
+        }
+        else
+        {
+            wxString diffStr;
+            error = git_diff_print(diff, GIT_DIFF_FORMAT_PATCH, diff_aggragator_cb, &diffStr);
+            if (0 != error)
+            {
+                const git_error *e = git_error_last();
+                fprintf(stderr, "LibGit2::%s:%d git_diff_print failed : %d/%d: %s\n", __FUNCTION__, __LINE__, error, e->klass, e->message);
+            }
+            else
+            {
+                cbEditor *editor = Manager::Get()->GetEditorManager()->New(_("Diff to index.patch"));
+                cbStyledTextCtrl *ctrl = editor->GetControl();
+                ctrl->SetLexerLanguage(wxT("diff"));
+                ctrl->SetText(diffStr);
+                editor->SetModified(false);
+            }
+            git_diff_free(diff);
+        }
+
+        for (size_t count = 0; count < opts.pathspec.count; count++)
+        {
+            free(opts.pathspec.strings[count]);
+        }
+    }
+    else
+    {
+        fprintf(stderr, "LibGit2::%s:%d no files\n", __FUNCTION__, __LINE__);
+    }
+    free(opts.pathspec.strings);
 }
 
 /***********************************************************************

@@ -20,15 +20,17 @@
 #include "git_libgit2.h"
 #include "icommandexecuter.h"
 #include <git2.h>
+#include <manager.h>
 #include <wx/string.h>
 
 LibGit2::LibGit2(const wxString &project, ICommandExecuter &cmdExecutor)
-    : IVersionControlSystem(project, m_GitUpdate, m_GitAdd, m_GitRemove, m_GitCommit, m_GitRevert),
+    : IVersionControlSystem(project, m_GitUpdate, m_GitAdd, m_GitRemove, m_GitCommit, m_GitDiff, m_GitRevert),
       m_CmdExecutor(cmdExecutor),
       m_GitUpdate(*this, m_GitRoot, m_CmdExecutor),
       m_GitAdd(*this, m_GitRoot, m_CmdExecutor),
       m_GitRemove(*this, m_GitRoot, m_CmdExecutor),
       m_GitCommit(*this, m_GitRoot, m_CmdExecutor),
+      m_GitDiff(*this, m_GitRoot, m_CmdExecutor),
       m_GitRevert(*this, m_GitRoot, m_CmdExecutor)
 {
     git_libgit2_init();

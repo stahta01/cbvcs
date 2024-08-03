@@ -56,6 +56,15 @@ class LibGit2CommitOp : public LibGit2_Op
     virtual void ExecuteImplementation(std::vector<VcsTreeItem *> &) const;
 };
 
+class LibGit2DiffOp : public LibGit2_Op
+{
+  public:
+    LibGit2DiffOp(LibGit2 &vcs, const wxString &vcsRootDir, ICommandExecuter &shellUtils) : LibGit2_Op(vcs, vcsRootDir, shellUtils) {}
+
+  private:
+    virtual void ExecuteImplementation(std::vector<VcsTreeItem *> &) const;
+};
+
 class LibGit2RemoveOp : public LibGit2_Op
 {
   public:

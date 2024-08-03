@@ -41,6 +41,7 @@ const int idAdd = wxNewId();
 const int idRemove = wxNewId();
 const int idRename = wxNewId();
 const int idCommit = wxNewId();
+const int idDiff = wxNewId();
 const int idRevert = wxNewId();
 const int idBranchCreate = wxNewId();
 const int idBranchCheckout = wxNewId();
@@ -56,6 +57,7 @@ BEGIN_EVENT_TABLE(cbvcs, cbPlugin)
     EVT_MENU( idAdd, cbvcs::OnAdd )
     EVT_MENU( idRemove, cbvcs::OnRemove )
     EVT_MENU( idCommit, cbvcs::OnCommit )
+    EVT_MENU( idDiff, cbvcs::OnDiff )
     EVT_MENU( idRevert, cbvcs::OnRevert )
 END_EVENT_TABLE()
 
@@ -139,6 +141,7 @@ void cbvcs::CreateProjectMenu(wxMenu* menu, const FileTreeData* data)
     tag->Append(idTagCheckout, _("Checkout"), _("Checkout a tag"));
 
     VcsMenu->Append(idCommit, _("Commit"), _("Commit this file"));
+    VcsMenu->Append(idDiff, _("Diff"), _("View diff"));
     VcsMenu->Append(idRevert, _("Revert"), _("Revert changes"));
 
     VcsMenu->AppendSubMenu(branch, _("Branch"));
@@ -153,6 +156,7 @@ void cbvcs::CreateFolderMenu(wxMenu* menu)
     VcsMenu->Append(idAdd, _("Add"), _("Add this file"));
     VcsMenu->Append(idRemove, _("Remove"), _("Remove this file"));
     VcsMenu->Append(idCommit, _("Commit"), _("Commit this file"));
+    VcsMenu->Append(idDiff, _("Diff"), _("View diff"));
     VcsMenu->Append(idRevert, _("Revert"), _("Revert changes"));
 
     menu->AppendSubMenu(VcsMenu, _("Git"));
@@ -189,6 +193,7 @@ void cbvcs::CreateFileMenu(wxMenu* menu, const FileTreeData* data)
         {
             VcsMenu->Append(idCommit, _("Commit"), _("Commit this file"));
             VcsMenu->Append(idRevert, _("Revert"), _("Revert changes"));
+            VcsMenu->Append(idDiff, _("Diff"), _("View diff"));
         }
     }
     else if(file->GetFileState() == (FileVisualState)Item_Missing)
@@ -291,6 +296,7 @@ enum  cbvcs::VcsAction : unsigned int
     VcsAction_Add,
     VcsAction_Remove,
     VcsAction_Commit,
+    VcsAction_Diff,
     VcsAction_Revert
 };
 
@@ -365,6 +371,9 @@ void cbvcs::PerformGroupActionOnSelection(VcsAction action)
     case VcsAction_Commit:
         vcs.CommitOp.execute(files.GetVector());
         break;
+    case VcsAction_Diff:
+        vcs.DiffOp.execute(files.GetVector());
+        break;
     case VcsAction_Revert:
         vcs.RevertOp.execute(files.GetVector());
         break;
@@ -385,6 +394,11 @@ void cbvcs::OnRemove( wxCommandEvent& /*event*/ )
 void cbvcs::OnCommit( wxCommandEvent& /*event*/ )
 {
     PerformGroupActionOnSelection(VcsAction_Commit);
+}
+
+void cbvcs::OnDiff( wxCommandEvent& /*event*/ )
+{
+    PerformGroupActionOnSelection(VcsAction_Diff);
 }
 
 void cbvcs::OnRevert( wxCommandEvent& /*event*/ )
