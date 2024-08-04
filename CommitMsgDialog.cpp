@@ -81,11 +81,10 @@ void CommitMsgDialog::EndModal(int retCode)
 {
     if (retCode == wxID_OK)
     {
-        m_msg = _("\"")
-            + m_Summary->GetValue()
-            + _("\n\n")
-            + m_Details->GetValue()
-            + _("\"");
+        m_msg = m_Summary->GetValue();
+        wxString details = m_Details->GetValue();
+        if (!details.empty())
+            m_msg += _("\n\n") + details;
     }
 
     wxScrollingDialog::EndModal(retCode);
