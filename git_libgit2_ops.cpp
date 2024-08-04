@@ -122,8 +122,6 @@ void LibGit2UpdateOp::ExecuteImplementation(std::vector<VcsTreeItem *> &proj_fil
                 const git_error *e = git_error_last();
                 fprintf(stderr, "LibGit2::%s:%d git_status_file failed for file %s : %d/%d: %s\n", __FUNCTION__, __LINE__,
                         relativeFilename.ToUTF8().data(), error, e->klass, e->message);
-                // File not found in output list. It could either be missing (untracked) or
-                // up-to-date
                 if (m_ShellUtils.FileExists(relativeFilename))
                 {
                     pf->SetState(Item_UpToDate);
@@ -239,6 +237,7 @@ void LibGit2AddOp::ExecuteImplementation(std::vector<VcsTreeItem *> &pathList) c
 void LibGit2CommitOp::ExecuteImplementation(std::vector<VcsTreeItem *> &pathList) const
 {
     wxArrayString itemList;
+    LibGit2AddOp::ExecuteImplementation(pathList);
     for (VcsTreeItem *vcsTreeItem : pathList)
     {
         wxString relativeFilename = vcsTreeItem->GetRelativeName(m_VcsRootDir);

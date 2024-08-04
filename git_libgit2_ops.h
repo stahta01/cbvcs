@@ -43,14 +43,14 @@ class LibGit2AddOp : public LibGit2_Op
   public:
     LibGit2AddOp(LibGit2 &vcs, const wxString &vcsRootDir, ICommandExecuter &shellUtils) : LibGit2_Op(vcs, vcsRootDir, shellUtils) {}
 
-  private:
+  protected:
     virtual void ExecuteImplementation(std::vector<VcsTreeItem *> &) const;
 };
 
-class LibGit2CommitOp : public LibGit2_Op
+class LibGit2CommitOp : public LibGit2AddOp
 {
   public:
-    LibGit2CommitOp(LibGit2 &vcs, const wxString &vcsRootDir, ICommandExecuter &shellUtils) : LibGit2_Op(vcs, vcsRootDir, shellUtils) {}
+    LibGit2CommitOp(LibGit2 &vcs, const wxString &vcsRootDir, ICommandExecuter &shellUtils) : LibGit2AddOp(vcs, vcsRootDir, shellUtils) {}
 
   private:
     virtual void ExecuteImplementation(std::vector<VcsTreeItem *> &) const;
