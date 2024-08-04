@@ -39,15 +39,16 @@ namespace
 PluginRegistrant<cbvcs> reg(_T("cbvcs"));
 const int idAdd = wxNewId();
 const int idRemove = wxNewId();
-const int idRename = wxNewId();
 const int idCommit = wxNewId();
 const int idDiff = wxNewId();
 const int idRevert = wxNewId();
+#if 0
 const int idBranchCreate = wxNewId();
 const int idBranchCheckout = wxNewId();
 const int idBranchMerge = wxNewId();
 const int idTagCreate = wxNewId();
 const int idTagCheckout = wxNewId();
+#endif
 }
 
 
@@ -131,6 +132,7 @@ void cbvcs::CreateProjectMenu(wxMenu* menu, const FileTreeData* data)
 {
     wxMenu* VcsMenu = new wxMenu(_("Git"));
 
+#if 0
     wxMenu* branch = new wxMenu(_("Branch"));
     branch->Append(idBranchCreate, _("Create"), _("Create branch"));
     branch->Append(idBranchCheckout, _("Checkout"), _("Checkout branch"));
@@ -139,13 +141,16 @@ void cbvcs::CreateProjectMenu(wxMenu* menu, const FileTreeData* data)
     wxMenu* tag = new wxMenu(_("Tag"));
     tag->Append(idTagCreate, _("Create"), _("Create a new tag"));
     tag->Append(idTagCheckout, _("Checkout"), _("Checkout a tag"));
+#endif
 
     VcsMenu->Append(idCommit, _("Commit"), _("Commit this file"));
     VcsMenu->Append(idDiff, _("Diff"), _("View diff"));
     VcsMenu->Append(idRevert, _("Revert"), _("Revert changes"));
 
+#if 0
     VcsMenu->AppendSubMenu(branch, _("Branch"));
     VcsMenu->AppendSubMenu(tag, _("Tag"));
+#endif
     menu->AppendSubMenu(VcsMenu, _("Git"));
 }
 
@@ -187,7 +192,6 @@ void cbvcs::CreateFileMenu(wxMenu* menu, const FileTreeData* data)
        || file->GetFileState() == (FileVisualState)Item_Modified)
     {
         VcsMenu->Append(idRemove, _("Remove"), _("Remove this file"));
-        VcsMenu->Append(idRename, _("Rename"), _("Rename this file"));
 
         if(file->GetFileState() == (FileVisualState)Item_Modified)
         {
