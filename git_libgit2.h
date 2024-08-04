@@ -26,13 +26,14 @@ class wxArrayString;
 class LibGit2 : public IVersionControlSystem
 {
   public:
-    static bool IsGitRepo(const wxString &project, ICommandExecuter &);
-    LibGit2(const wxString &project, ICommandExecuter &cmdExecutor);
+    static bool IsGitRepo(const wxString &project, ICommandExecuter &, wxString *workDirectory);
+    LibGit2(const wxString &project, ICommandExecuter &cmdExecutor, wxString workDirectory);
     virtual ~LibGit2();
 
     virtual bool move(std::vector<VcsTreeItem *> &) { return false; }
 
   protected:
+    wxString m_workDirectory;
     wxString m_GitRoot;
 
   private:
@@ -44,7 +45,7 @@ class LibGit2 : public IVersionControlSystem
     LibGit2DiffOp m_GitDiff;
     LibGit2RevertOp m_GitRevert;
 
-    wxString QueryRoot(const wxString &);
+    wxString QueryRoot(const char *);
 };
 
 #endif // GIT_H

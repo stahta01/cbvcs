@@ -32,9 +32,9 @@ class GitRepo
   public:
     git_repository *m_repo{nullptr};
 
-    GitRepo(wxString project)
+    GitRepo(const wxString &workDir)
     {
-        int error = git_repository_open(&m_repo, wxPathOnly(project).ToUTF8().data());
+        int error = git_repository_open(&m_repo, workDir.ToUTF8().data());
         if (0 != error)
         {
             const git_error *e = git_error_last();
@@ -56,7 +56,7 @@ class GitRepoIndex
     git_index *m_idx{nullptr};
     GitRepo m_gitRepo;
 
-    GitRepoIndex(const wxString &project) : m_gitRepo(project)
+    GitRepoIndex(const wxString &workDir) : m_gitRepo(workDir)
     {
         if (m_gitRepo.m_repo)
         {
@@ -99,6 +99,9 @@ LibGit2UpdateOp::LibGit2UpdateOp(LibGit2 &vcs, const wxString &vcsRootDir, IComm
 void LibGit2UpdateOp::ExecuteImplementation(std::vector<VcsTreeItem *> &proj_files) const
 {
     GitRepo gitRepo(m_VcsRootDir);
+    fprintf(stderr, "LibGit2::%s:%d Enter. m_VcsRootDir %s proj_files size %zu\n", __FUNCTION__, __LINE__, m_VcsRootDir.ToUTF8().data(),
+            proj_files.size());
+
     if (gitRepo.m_repo)
     {
         std::vector<VcsTreeItem *>::iterator fi;
@@ -113,6 +116,8 @@ void LibGit2UpdateOp::ExecuteImplementation(std::vector<VcsTreeItem *> &proj_fil
 
             if (relativeFilename.length() == 0)
             {
+                fprintf(stderr, "LibGit2::%s:%d couldn't get relativeFilename for vcsTreeItem %s\n", __FUNCTION__, __LINE__,
+                        pf->GetName().ToUTF8().data());
                 continue;
             }
             unsigned int statusFlags = 0;

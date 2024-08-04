@@ -26,16 +26,10 @@
 /*static*/ IVersionControlSystem* VcsFactory::GetVcs(const wxString& ProjectPath,
                                                      ICommandExecuter& shellUtils)
 {
-#ifdef USE_LIBGIT2
-    if(LibGit2::IsGitRepo(ProjectPath, shellUtils))
+    wxString workDirectory;
+    if(LibGit2::IsGitRepo(ProjectPath, shellUtils, &workDirectory))
     {
-        return new LibGit2(ProjectPath, shellUtils);
+        return new LibGit2(ProjectPath, shellUtils, workDirectory);
     }
-#else
-    if(git::IsGitRepo(ProjectPath, shellUtils))
-    {
-        return new git(ProjectPath, shellUtils);
-    }
-#endif
     return 0;
 }
