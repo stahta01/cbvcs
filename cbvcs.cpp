@@ -335,7 +335,7 @@ void cbvcs::PerformGroupActionOnSelection(VcsAction action)
         vcsProjectTracker* prjTracker = GetVcsInstance(fileTreeData);
         if(!prjTracker)
         {
-            fprintf(stderr, "%s:%d : prjTracker data not available. index %zu %s\n", __FUNCTION__, __LINE__, i, fileTreeData->GetProjectFile()->relativeToCommonTopLevelPath.ToUTF8().data());
+            fprintf(stderr, "%s:%d : prjTracker data not available. index %zu\n", __FUNCTION__, __LINE__, i);
             continue;
         }
         selectedProjectTracker =  prjTracker;
