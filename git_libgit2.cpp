@@ -100,15 +100,16 @@ wxString LibGit2::QueryRoot(const char *gitWorkDirInProject)
     git_repository *repo;
     git_libgit2_init();
     wxString projectPath = wxPathOnly(project);
-    if (0 == git_repository_open(&repo, projectPath))
+    git_buf root = {0};
+    int error = git_repository_discover(&root, projectPath, 0, NULL);
+    if (!error)
     {
         fprintf(stderr, "LibGit2::%s:%d project file's path is repo\n", __FUNCTION__, __LINE__);
         ret = true;
         if (workDirectory)
         {
-            *workDirectory = std::move(projectPath);
+            *workDirectory = root.ptr;
         }
-        git_repository_free(repo);
     }
     else
     {
@@ -144,6 +145,7 @@ wxString LibGit2::QueryRoot(const char *gitWorkDirInProject)
             }
         }
     }
+    git_buf_free(&root);
     git_libgit2_shutdown();
     return ret;
 }
