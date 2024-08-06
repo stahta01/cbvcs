@@ -42,6 +42,7 @@ const int idRemove = wxNewId();
 const int idCommit = wxNewId();
 const int idDiff = wxNewId();
 const int idRevert = wxNewId();
+const int idRefresh = wxNewId();
 #if 0
 const int idBranchCreate = wxNewId();
 const int idBranchCheckout = wxNewId();
@@ -60,6 +61,7 @@ BEGIN_EVENT_TABLE(cbvcs, cbPlugin)
     EVT_MENU( idCommit, cbvcs::OnCommit )
     EVT_MENU( idDiff, cbvcs::OnDiff )
     EVT_MENU( idRevert, cbvcs::OnRevert )
+    EVT_MENU( idRefresh, cbvcs::OnRefresh )
 END_EVENT_TABLE()
 
 // constructor
@@ -146,6 +148,7 @@ void cbvcs::CreateProjectMenu(wxMenu* menu, const FileTreeData* data)
     VcsMenu->Append(idCommit, _("Commit"), _("Commit this file"));
     VcsMenu->Append(idDiff, _("Diff"), _("View diff"));
     VcsMenu->Append(idRevert, _("Revert"), _("Revert changes"));
+    VcsMenu->Append(idRefresh, _("Refresh"), _("Refresh VCS status"));
 
 #if 0
     VcsMenu->AppendSubMenu(branch, _("Branch"));
@@ -163,6 +166,7 @@ void cbvcs::CreateFolderMenu(wxMenu* menu)
     VcsMenu->Append(idCommit, _("Commit"), _("Commit this file"));
     VcsMenu->Append(idDiff, _("Diff"), _("View diff"));
     VcsMenu->Append(idRevert, _("Revert"), _("Revert changes"));
+    VcsMenu->Append(idRefresh, _("Refresh"), _("Refresh VCS status"));
 
     menu->AppendSubMenu(VcsMenu, _("Git"));
 }
@@ -205,6 +209,7 @@ void cbvcs::CreateFileMenu(wxMenu* menu, const FileTreeData* data)
         VcsMenu->Append(idRemove, _("Remove"), _("Remove this file"));
         VcsMenu->Append(idRevert, _("Revert"), _("Revert changes"));
     }
+    VcsMenu->Append(idRefresh, _("Refresh"), _("Refresh VCS status"));
 
     menu->AppendSubMenu(VcsMenu, _("Git"));
 }
@@ -301,7 +306,8 @@ enum  cbvcs::VcsAction : unsigned int
     VcsAction_Remove,
     VcsAction_Commit,
     VcsAction_Diff,
-    VcsAction_Revert
+    VcsAction_Revert,
+    VcsAction_Refresh,
 };
 
 void cbvcs::PerformGroupActionOnSelection(VcsAction action)
@@ -381,6 +387,9 @@ void cbvcs::PerformGroupActionOnSelection(VcsAction action)
     case VcsAction_Revert:
         vcs.RevertOp.execute(files.GetVector());
         break;
+    case VcsAction_Refresh:
+        vcs.UpdateOp.execute(files.GetVector());
+        break;
     }
     vcs.UpdateOp.execute(files.GetVector());
 }
@@ -408,6 +417,11 @@ void cbvcs::OnDiff( wxCommandEvent& /*event*/ )
 void cbvcs::OnRevert( wxCommandEvent& /*event*/ )
 {
     PerformGroupActionOnSelection(VcsAction_Revert);
+}
+
+void cbvcs::OnRefresh( wxCommandEvent& /*event*/ )
+{
+    PerformGroupActionOnSelection(VcsAction_Refresh);
 }
 
 void cbvcs::OnProjectOpen( CodeBlocksEvent& event )
