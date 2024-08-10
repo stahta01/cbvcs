@@ -216,7 +216,7 @@ void cbvcs::CreateFileMenu(wxMenu* menu, const FileTreeData* data)
 
 void cbvcs::BuildModuleMenu(const ModuleType type, wxMenu* menu, const FileTreeData* data)
 {
-    if ( !menu || !IsAttached())
+    if ( !menu || !IsAttached() || !data)
         return;
 
     if(type != mtProjectManager)
