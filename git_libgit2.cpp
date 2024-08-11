@@ -101,7 +101,7 @@ wxString LibGit2::QueryRoot(const char *gitWorkDirInProject)
     git_libgit2_init();
     wxString projectPath = wxPathOnly(project);
     git_buf root = {0};
-    int error = git_repository_discover(&root, projectPath, 0, NULL);
+    int error = git_repository_discover(&root, projectPath.c_str(), 0, NULL);
     if (!error)
     {
         fprintf(stderr, "LibGit2::%s:%d project file's path is repo\n", __FUNCTION__, __LINE__);
@@ -126,7 +126,7 @@ wxString LibGit2::QueryRoot(const char *gitWorkDirInProject)
             bool cont = dir.GetFirst(&subDirPath, wxEmptyString, wxDIR_DIRS);
             while (cont)
             {
-                if (0 == git_repository_open(&repo, subDirPath))
+                if (0 == git_repository_open(&repo, subDirPath.c_str()))
                 {
                     fprintf(stderr, "LibGit2::%s:%d subDirPath %s is workdir\n", __FUNCTION__, __LINE__, subDirPath.ToUTF8().data());
                     ret = true;
